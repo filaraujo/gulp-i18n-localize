@@ -14,11 +14,14 @@ $ npm install --save-dev gulp-i18n-localize
 
 ```js
 var gulp = require('gulp');
-var i18n2 = require('gulp-i18n-localize');
+var i18n = require('gulp-i18n-localize');
 
 gulp.task('default', function () {
-	return gulp.src('src/file.ext')
-		.pipe(i18n2())
+	return gulp.src('src/index.html')
+		.pipe(i18n({
+			locales: ['en-US'],
+			localeDir: './locales'
+		}))
 		.pipe(gulp.dest('dist'));
 });
 ```
@@ -26,16 +29,57 @@ gulp.task('default', function () {
 
 ## API
 
-### i18n2(options)
+### i18n(options)
 
 #### options
 
-##### foo
+##### delimeters
 
-Type: `boolean`
-Default: `false`
+Type: `array`
+Default: `['${{', '}}$']`
 
-Lorem ipsum.
+Sets the delimeters to search assets files and replace with translated content.
+By default, it will match `${{` and `$}}`.
+
+delimeters				| matches
+--------------- 	| -------------
+`${{` `}}$`				| `${{ foo.bar }}$`
+`^{` `}^`					| `^{ foo.bar }^`
+`translate(` `)`	| `t(foo.bar)`  but why would you do this!!!
+
+
+---
+
+##### localeDir
+
+Type: `array`
+`Required`
+
+Location of translation files. This is a required field.
+
+---
+
+##### locales
+
+Type: `array`
+Default: `['en-US']`
+
+Locales to translate, should match `localDir` subfolders.
+
+---
+
+##### schema
+
+Type: `string`
+Default: `directory`
+
+Sets the schema to be used for naming translated assets.
+
+schema			| output name
+----------- | -------------
+`directory`	| `/en-US/index.html`
+`suffix`  	| `/index-en-US.html`
+
 
 
 ## License

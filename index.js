@@ -61,8 +61,8 @@ function setRegex(delimeters) {
   var dilems = delimeters.map(function(dilem) {
     return dilem.replace(escapeChars, '\\$&');
   });
-  dilems.splice(1, 0, ' ?([\\w-.]+) ');
-  return new RegExp(dilems.join(''));
+  dilems.splice(1, 0, ' ?([\\w-.]+) ?');
+  return new RegExp(dilems.join(''), 'g');
 }
 
 module.exports = function (options) {

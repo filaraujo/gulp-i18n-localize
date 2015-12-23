@@ -1,7 +1,7 @@
 'use strict';
 var assert = require('assert');
 var gutil = require('gulp-util');
-var i18n2 = require('.././');
+var i18n = require('.././');
 
 
 describe('gulp-i18n-localize: locale', function() {
@@ -15,7 +15,7 @@ describe('gulp-i18n-localize: locale', function() {
   it('uses locale directory when not defined', function(cb) {
     var output = [];
 
-    stream = i18n2({
+    stream = i18n({
       localeDir: './test/fixtures/locales'
     });
 
@@ -33,7 +33,7 @@ describe('gulp-i18n-localize: locale', function() {
   });
 
   it('uses locale when defined', function(cb) {
-    stream = i18n2({
+    stream = i18n({
       locales: ['es-US'],
       localeDir: './test/fixtures/locales'
     });
