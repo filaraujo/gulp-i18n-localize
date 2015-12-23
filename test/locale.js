@@ -4,7 +4,7 @@ var gutil = require('gulp-util');
 var i18n2 = require('.././');
 
 
-describe('gulp-i18n2: locale', function() {
+describe('gulp-i18n-localize: locale', function() {
   var file = new gutil.File({
     base: __dirname,
     path: __dirname + '/file.html',

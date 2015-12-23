@@ -67,7 +67,7 @@ function setRegex(delimeters) {
 
 module.exports = function (options) {
   if (!options || !options.localeDir) {
-    throw new gutil.PluginError('gulp-i18n2', '`locale directory` required');
+    throw new gutil.PluginError('gulp-i18n-localize', '`locale directory` required');
   }
 
   options.dictionary = requireDir(options.localeDir, {recurse: true});
@@ -86,7 +86,7 @@ module.exports = function (options) {
     }
 
     if (file.isStream()) {
-      cb(new gutil.PluginError('gulp-i18n2', 'Streaming not supported'));
+      cb(new gutil.PluginError('gulp-i18n-localize', 'Streaming not supported'));
       return;
     }
 
@@ -105,7 +105,7 @@ module.exports = function (options) {
           }));
         }, this);
     } catch (err) {
-      this.emit('error', new gutil.PluginError('gulp-i18n2', err));
+      this.emit('error', new gutil.PluginError('gulp-i18n-localize', err));
     }
 
     cb();

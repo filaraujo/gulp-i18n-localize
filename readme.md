@@ -1,4 +1,4 @@
-# gulp-i18n2 [![Build Status](https://travis-ci.org/filaraujo/gulp-i18n2.svg?branch=master)](https://travis-ci.org/filaraujo/gulp-i18n2)
+# gulp-i18n-localize [![Build Status](https://travis-ci.org/filaraujo/gulp-i18n-localize.svg?branch=master)](https://travis-ci.org/filaraujo/gulp-i18n-localize)
 
 > My exquisite gulp plugin
 
@@ -6,7 +6,7 @@
 ## Install
 
 ```
-$ npm install --save-dev gulp-i18n2
+$ npm install --save-dev gulp-i18n-localize
 ```
 
 
@@ -14,7 +14,7 @@ $ npm install --save-dev gulp-i18n2
 
 ```js
 var gulp = require('gulp');
-var i18n2 = require('gulp-i18n2');
+var i18n2 = require('gulp-i18n-localize');
 
 gulp.task('default', function () {
 	return gulp.src('src/file.ext')
@@ -32,7 +32,7 @@ gulp.task('default', function () {
 
 ##### foo
 
-Type: `boolean`  
+Type: `boolean`
 Default: `false`
 
 Lorem ipsum.

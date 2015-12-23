@@ -3,7 +3,7 @@ var assert = require('assert');
 var gutil = require('gulp-util');
 var i18n2 = require('.././');
 
-describe('gulp-i18n2: delimiters', function() {
+describe('gulp-i18n-localize: delimiters', function() {
   var stream;
 
   it('uses default "${{ }}$" delimeter when not defined', function(cb) {
