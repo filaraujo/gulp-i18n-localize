@@ -41,11 +41,11 @@ Default: `['${{', '}}$']`
 Sets the delimeters to search assets files and replace with translated content.
 By default, it will match `${{` and `$}}`.
 
-delimeters				| matches
---------------- 	| -------------
-`${{` `}}$`				| `${{ foo.bar }}$`
-`^{` `}^`					| `^{ foo.bar }^`
-`translate(` `)`	| `t(foo.bar)`  but why would you do this!!!
+delimeter[0] 	| delimeter[1]	| matches
+---						| --- 					| ---
+`${{` 				| `}}$`					| `${{ foo.bar }}$`
+`!{` 					|	`}!`					| `!{ foo.bar }!`
+`#{` 					|	`}#`					| `#{ foo.bar }#`
 
 
 ---
