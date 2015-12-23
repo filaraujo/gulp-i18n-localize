@@ -1,6 +1,6 @@
 # gulp-i18n-localize [![Build Status](https://travis-ci.org/filaraujo/gulp-i18n-localize.svg?branch=master)](https://travis-ci.org/filaraujo/gulp-i18n-localize)
 
-> My exquisite gulp plugin
+> localization plugin for gulp
 
 
 ## Install
