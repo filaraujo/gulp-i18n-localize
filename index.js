@@ -79,13 +79,13 @@ module.exports = function (options) {
     throw new gutil.PluginError('gulp-i18n-localize', '`locale directory` required');
   }
 
-  options.dictionary = requireDir(options.localeDir, {recurse: true});
+  var localeDir = path.resolve(process.cwd(), options.localeDir);
+
+  options.dictionary = requireDir(localeDir, {recurse: true});
   options.locales = options.locales || Object.keys(options.dictionary);
   options.ignoreErrors = options.ignoreErrors || false;
   options.schema = options.schema || 'directory';
   options.regex = setRegex(options.delimeters || ['${{', '}}$']);
-
-  console.log('ignore', options.ignoreErrors)
 
   return through.obj(function (file, enc, cb) {
     var filePath;
