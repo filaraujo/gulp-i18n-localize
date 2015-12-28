@@ -27,12 +27,21 @@ function getSchema(type, filePath) {
  * @param {obj} options configuration object
  * @return {obj} collection object with translations
  */
-function i18n(content, options) {
+function i18n(content, options, errors) {
   var i18ns = {};
 
   options.locales.forEach(function(locale) {
     var dict = options.dictionary[locale];
-    i18ns[locale] = content.replace(options.regex, lookup.bind(null, dict));
+
+    i18ns[locale] = content.replace(options.regex, function($0, $1) {
+      var match = lookup(dict, $1);
+
+      if (!match) {
+        errors.push([$0, 'translation missing in', locale]);
+      }
+
+      return match || $0;
+    });
   });
 
   return i18ns;
@@ -42,15 +51,15 @@ function i18n(content, options) {
  * @param {obj} dict dictionary object
  * @return {string} translated text
  */
-function lookup(dict, $0, $1) {
+function lookup(dict, $1) {
   var key = $1.split('.');
   key.unshift(dict);
 
   var value = key.reduce(function(c, a, b) {
-    return c[a];
+    return c[a] || '';
   });
 
-  return value || $1;
+  return value;
 }
 
 /**
@@ -72,13 +81,17 @@ module.exports = function (options) {
 
   options.dictionary = requireDir(options.localeDir, {recurse: true});
   options.locales = options.locales || Object.keys(options.dictionary);
+  options.ignoreErrors = options.ignoreErrors || false;
   options.schema = options.schema || 'directory';
   options.regex = setRegex(options.delimeters || ['${{', '}}$']);
+
+  console.log('ignore', options.ignoreErrors)
 
   return through.obj(function (file, enc, cb) {
     var filePath;
     var output;
     var schema;
+    var errors = [];
 
     if (file.isNull()) {
       cb(null, file);
@@ -91,8 +104,16 @@ module.exports = function (options) {
     }
 
     try {
-      output = i18n(file.contents.toString(), options);
+      output = i18n(file.contents.toString(), options, errors);
       schema = getSchema(options.schema, file.path);
+
+      errors.forEach(function(error) {
+        gutil.log.apply({}, error);
+
+        if (!options.ignoreErrors) {
+          new gutil.PluginError('gulp-i18n-localize', error);
+        }
+      });
 
       Object.keys(output)
         .forEach(function(locale) {

@@ -2,6 +2,7 @@
 var assert = require('assert');
 var gutil = require('gulp-util');
 var i18n = require('.././');
+var sinon = require('sinon');
 
 describe('gulp-i18n-localize', function() {
   var stream;
@@ -50,4 +51,28 @@ describe('gulp-i18n-localize', function() {
       stream.end();
     });
   });
+
+  describe('when given valid markup with missing dictionary matches', function() {
+    it('outputs error information', function (cb) {
+      var spy = sinon.spy(gutil, 'log');
+      stream = i18n({
+        ignoreErrors: true,
+        locales: ['en-US'],
+        localeDir: './test/fixtures/locales'
+      });
+
+      stream.on('data', function (file) {
+        assert.ok(spy.called);
+      });
+
+      stream.on('end', cb);
+      stream.write(new gutil.File({
+        base: __dirname,
+        path: __dirname + '/file.html',
+        contents: new Buffer('${{ bar.foo }}$ ${{ bar.foo }}$')
+      }));
+      stream.end();
+    });
+  });
+
 });
