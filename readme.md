@@ -50,6 +50,15 @@ delimeter[0] 	| delimeter[1]	| matches
 
 ---
 
+##### ignoreErrors
+
+Type: `boolean`
+
+Sets whether to ignore errors and prevent gulp from failing. This will still log
+errors to gulp.
+
+---
+
 ##### localeDir
 
 Type: `array`
