@@ -11,11 +11,13 @@ var escapeChars = /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g;
  * @param {string} filePath file path
  * @return {array} schema collection
  */
-function getSchema(type, filePath) {
-  var parsed = path.parse(filePath);
+function getSchema(type, file) {
+  var dir = path.resolve(file.cwd, file.base);
+  var base = file.path.replace(dir, '').replace(/^\//, '');
+  var parsed = path.parse(base);
 
   var schemas = {
-    directory: [parsed.dir, 'LOCALE', parsed.base],
+    directory: ['LOCALE', parsed.dir, parsed.base],
     suffix: [parsed.dir, parsed.name + '-LOCALE' + parsed.ext]
   };
 
@@ -94,7 +96,7 @@ module.exports = function (options) {
     var errors = [];
 
     if (file.isNull()) {
-      cb(null, file);
+      cb(null);
       return;
     }
 
@@ -105,7 +107,7 @@ module.exports = function (options) {
 
     try {
       output = i18n(file.contents.toString(), options, errors);
-      schema = getSchema(options.schema, file.path);
+      schema = getSchema(options.schema, file);
 
       errors.forEach(function(error) {
         gutil.log.apply({}, error);
