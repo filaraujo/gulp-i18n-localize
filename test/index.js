@@ -84,6 +84,9 @@ describe('gulp-i18n-localize', function() {
 
       stream.on('data', function (file) {
         assert.ok(spy.called);
+				assert.ok(
+					spy.calledWith('gulp-i18n-localize:', '${{ bar.foo }}$', 'translation missing in', 'en-US')
+				);
       });
 
       stream.on('end', cb);

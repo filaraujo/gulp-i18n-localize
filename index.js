@@ -6,6 +6,7 @@ var requireDir = require('require-dir');
 var through = require('through2');
 
 var escapeChars = /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g;
+var localizationMatchCount;
 
 /**
  * @param {string} type schema type
@@ -38,12 +39,15 @@ function i18n(content, options, errors) {
 
     i18ns[locale] = content.replace(options.regex, function($0, $1) {
       var match = lookup(dict, $1);
+			var notFound = match === undefined;
 
-      if (!match) {
+      if (notFound) {
         errors.push([$0, 'translation missing in', locale]);
-      }
+      } else {
+				localizationMatchCount++;
+			}
 
-      return match || $0;
+      return notFound ? $0 : match;
     });
   });
 
@@ -56,11 +60,10 @@ function i18n(content, options, errors) {
  */
 function lookup(dict, $1) {
   var key = $1.split('.');
-  key.unshift(dict);
 
   var value = key.reduce(function(c, a, b) {
-    return c[a] || '';
-  });
+    return (c || {})[a];
+  }, dict);
 
   return value;
 }
@@ -78,6 +81,8 @@ function setRegex(delimeters) {
 }
 
 module.exports = function (options) {
+	localizationMatchCount = 0;
+
   if (!options || !options.localeDir) {
     throw new gutil.PluginError('gulp-i18n-localize', 'locale directory required');
   }
@@ -140,5 +145,8 @@ module.exports = function (options) {
     }
 
     cb();
-  });
+  }, function(cb) {
+		gutil.log.apply({}, ['gulp-i18n-localize:', localizationMatchCount, 'translations found']);
+		cb();
+	});
 };
