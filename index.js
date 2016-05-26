@@ -1,4 +1,5 @@
 'use strict';
+var fs = require('fs');
 var gutil = require('gulp-util');
 var path = require('path');
 var requireDir = require('require-dir');
@@ -78,12 +79,19 @@ function setRegex(delimeters) {
 
 module.exports = function (options) {
   if (!options || !options.localeDir) {
-    throw new gutil.PluginError('gulp-i18n-localize', '`locale directory` required');
+    throw new gutil.PluginError('gulp-i18n-localize', 'locale directory required');
   }
 
   var localeDir = path.resolve(process.cwd(), options.localeDir);
 
-  options.dictionary = requireDir(localeDir, {recurse: true});
+	try {
+		fs.accessSync(localeDir);
+		options.dictionary = requireDir(localeDir, {recurse: true});
+	} catch(e) {
+		gutil.log('gulp-i18n-localize: locale directory not found');
+		options.dictionary = false;
+	}
+
   options.locales = options.locales || Object.keys(options.dictionary);
   options.ignoreErrors = options.ignoreErrors || false;
   options.schema = options.schema || 'directory';
@@ -95,7 +103,7 @@ module.exports = function (options) {
     var schema;
     var errors = [];
 
-    if (file.isNull()) {
+    if (file.isNull() || !options.dictionary) {
       cb(null);
       return;
     }
@@ -110,7 +118,7 @@ module.exports = function (options) {
       schema = getSchema(options.schema, file);
 
       errors.forEach(function(error) {
-        gutil.log.apply({}, error);
+        gutil.log.apply({}, ['gulp-i18n-localize:'].concat(error));
 
         if (!options.ignoreErrors) {
           new gutil.PluginError('gulp-i18n-localize', error);

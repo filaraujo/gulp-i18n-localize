@@ -6,18 +6,40 @@ var sinon = require('sinon');
 
 describe('gulp-i18n-localize', function() {
   var stream;
+	var spy = sinon.spy(gutil, 'log');
 
   beforeEach(function() {
     stream = i18n({
       locales: ['en-US'],
       localeDir: './test/fixtures/locales'
     });
+		spy.reset();
   });
 
   it('throws an error when no "localeDir" is defined', function() {
     assert.throws(function() {
       i18n();
     });
+  });
+
+	it('warns when folder is not found', function(cb) {
+		stream = i18n({
+			localeDir: './test/fixtures/fauxDir'
+		});
+
+		stream.on('data', function (file) {});
+
+		stream.on('end', function() {
+			assert.ok(spy.called);
+			assert.ok(spy.calledWith('gulp-i18n-localize: locale directory not found'));
+			cb();
+		});
+		stream.write(new gutil.File({
+			base: __dirname,
+			path: __dirname + '/file.html',
+			contents: new Buffer('${{ bar.foo }}$ ${{ bar.foo }}$')
+		}));
+		stream.end();
   });
 
   describe('when given valid markup containing correct syntax', function() {
@@ -54,7 +76,6 @@ describe('gulp-i18n-localize', function() {
 
   describe('when given valid markup with missing dictionary matches', function() {
     it('outputs error information', function (cb) {
-      var spy = sinon.spy(gutil, 'log');
       stream = i18n({
         ignoreErrors: true,
         locales: ['en-US'],
