@@ -40,22 +40,21 @@ function i18n(file, options, errors) {
   options.locales.forEach(function(locale) {
     var dict = options.dictionary[locale];
 
-    if (isBinary) {
-      return file.contents;
+    if (!isBinary) {
+      i18ns[locale] = stringContents
+        .replace(options.regex, function($0, $1) {
+          var match = lookup(dict, $1);
+          var notFound = match === undefined;
+
+          if (notFound) {
+            errors.push([$0, 'translation missing in', locale]);
+          } else {
+            localizationMatchCount++;
+          }
+
+          return notFound ? $0 : match;
+        });
     }
-
-    i18ns[locale] = stringContents.replace(options.regex, function($0, $1) {
-      var match = lookup(dict, $1);
-      var notFound = match === undefined;
-
-      if (notFound) {
-        errors.push([$0, 'translation missing in', locale]);
-      } else {
-        localizationMatchCount++;
-      }
-
-      return notFound ? $0 : match;
-    });
   });
 
   return i18ns;
@@ -139,12 +138,19 @@ module.exports = function(options) {
 
       Object.keys(output)
         .forEach(function(locale) {
+          var contents = file.contents;
+
           filePath = path.resolve.apply(path, schema)
             .replace('LOCALE', locale);
 
+          // if localization convert to buffer
+          if (output[locale]) {
+            contents = new Buffer(output[locale]);
+          }
+
           this.push(new gutil.File({
             path: filePath,
-            contents: new Buffer(output[locale])
+            contents: contents
           }));
         }, this);
     } catch (err) {
