@@ -4,6 +4,7 @@ var gutil = require('gulp-util');
 var path = require('path');
 var requireDir = require('require-dir');
 var through = require('through2');
+var istextorbinary = require('istextorbinary');
 
 var escapeChars = /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g;
 var localizationMatchCount;
@@ -31,21 +32,27 @@ function getSchema(type, file) {
  * @param {obj} options configuration object
  * @return {obj} collection object with translations
  */
-function i18n(content, options, errors) {
+function i18n(file, options, errors) {
   var i18ns = {};
+  var isBinary = istextorbinary.isBinarySync(file.path, file.contents);
+  var stringContents = file.contents.toString();
 
   options.locales.forEach(function(locale) {
     var dict = options.dictionary[locale];
 
-    i18ns[locale] = content.replace(options.regex, function($0, $1) {
+    if (isBinary) {
+      return file.contents;
+    }
+
+    i18ns[locale] = stringContents.replace(options.regex, function($0, $1) {
       var match = lookup(dict, $1);
-			var notFound = match === undefined;
+      var notFound = match === undefined;
 
       if (notFound) {
         errors.push([$0, 'translation missing in', locale]);
       } else {
-				localizationMatchCount++;
-			}
+        localizationMatchCount++;
+      }
 
       return notFound ? $0 : match;
     });
@@ -61,7 +68,7 @@ function i18n(content, options, errors) {
 function lookup(dict, $1) {
   var key = $1.split('.');
 
-  var value = key.reduce(function(c, a, b) {
+  var value = key.reduce(function(c, a) {
     return (c || {})[a];
   }, dict);
 
@@ -80,8 +87,8 @@ function setRegex(delimeters) {
   return new RegExp(dilems.join(''), 'g');
 }
 
-module.exports = function (options) {
-	localizationMatchCount = 0;
+module.exports = function(options) {
+  localizationMatchCount = 0;
 
   if (!options || !options.localeDir) {
     throw new gutil.PluginError('gulp-i18n-localize', 'locale directory required');
@@ -89,20 +96,20 @@ module.exports = function (options) {
 
   var localeDir = path.resolve(process.cwd(), options.localeDir);
 
-	try {
-		fs.accessSync(localeDir);
-		options.dictionary = requireDir(localeDir, {recurse: true});
-	} catch(e) {
-		gutil.log('gulp-i18n-localize: locale directory not found');
-		options.dictionary = false;
-	}
+  try {
+    fs.accessSync(localeDir);
+    options.dictionary = requireDir(localeDir, {recurse: true});
+  } catch (e) {
+    gutil.log('gulp-i18n-localize: locale directory not found');
+    options.dictionary = false;
+  }
 
   options.locales = options.locales || Object.keys(options.dictionary);
   options.ignoreErrors = options.ignoreErrors || false;
   options.schema = options.schema || 'directory';
   options.regex = setRegex(options.delimeters || ['${{', '}}$']);
 
-  return through.obj(function (file, enc, cb) {
+  return through.obj(function(file, enc, cb) {
     var filePath;
     var output;
     var schema;
@@ -119,7 +126,7 @@ module.exports = function (options) {
     }
 
     try {
-      output = i18n(file.contents.toString(), options, errors);
+      output = i18n(file, options, errors);
       schema = getSchema(options.schema, file);
 
       errors.forEach(function(error) {
@@ -146,7 +153,7 @@ module.exports = function (options) {
 
     cb();
   }, function(cb) {
-		gutil.log.apply({}, ['gulp-i18n-localize:', localizationMatchCount, 'translations found']);
-		cb();
-	});
+    gutil.log.apply({}, ['gulp-i18n-localize:', localizationMatchCount, 'translations found']);
+    cb();
+  });
 };
