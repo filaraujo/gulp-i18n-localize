@@ -1,6 +1,6 @@
 {
   "name": "gulp-i18n-localize",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "",
   "license": "MIT",
   "repository": "filaraujo/gulp-i18n-localize",
@@ -16,10 +16,6 @@
     "test": "mocha"
   },
   "main": "./index.js",
-  "files": [
-    "index.js",
-    "test"
-  ],
   "keywords": [
     "gulpplugin, i18n, internationalization, translation, translate"
   ],
