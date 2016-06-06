@@ -15,6 +15,11 @@
   "scripts": {
     "test": "mocha"
   },
+  "main": "./index.js",
+  "files": [
+    "index.js",
+    "test"
+  ],
   "keywords": [
     "gulpplugin, i18n, internationalization, translation, translate"
   ],
