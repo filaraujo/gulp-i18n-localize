@@ -39,6 +39,7 @@ function i18n(file, options, errors) {
 
   options.locales.forEach(function(locale) {
     var dict = options.dictionary[locale];
+    i18ns[locale] = null;
 
     if (!isBinary) {
       i18ns[locale] = stringContents
