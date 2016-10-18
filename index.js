@@ -16,7 +16,7 @@ var localizationMatchCount;
  */
 function getSchema(type, file) {
   var dir = path.resolve(file.cwd, file.base);
-  var base = file.path.replace(dir, '').replace(/^\//, '');
+  var base = file.path.replace(dir, '').replace(new RegExp('^\\' + path.sep), '');
   var parsed = path.parse(base);
 
   var schemas = {
