@@ -1,9 +1,9 @@
 {
   "name": "gulp-i18n-localize",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "",
   "license": "MIT",
-  "repository": "filaraujo/gulp-i18n-localize",
+  "repository": "jaakon/gulp-i18n-localize",
   "author": {
     "name": "Filipe Araujo",
     "email": "filipe.alves.araujo@gmail.com",
