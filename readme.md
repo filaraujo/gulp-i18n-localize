@@ -26,6 +26,26 @@ gulp.task('default', function () {
 });
 ```
 
+## File structure
+Create a localization folder `locales` for example that contains language subfolders.
+Translations are referenced against the folder name and key value in the file.
+
+For example if you wanted to add spanish translations for animals you would
+create a `.locales/es-US` directory containing a `animals.json` file.
+The file would contain the translations below.
+```json
+{
+	"cat": "gato",
+	"dog": {
+		"name": "perro"
+	}
+}
+```
+
+You then could reference this by using `${{ animals.cat }}$` and
+`${{ animals.dog.name }}$` in your code.
+
+
 
 ## API
 
