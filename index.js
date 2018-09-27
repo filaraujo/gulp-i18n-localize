@@ -99,7 +99,7 @@ module.exports = function(options) {
 
   try {
     fs.accessSync(localeDir);
-    options.dictionary = requireDir(localeDir, {recurse: true});
+    options.dictionary = requireDir(localeDir, {recurse: true, noCache: true});
   } catch (e) {
     gutil.log('gulp-i18n-localize: locale directory not found');
     options.dictionary = false;
