@@ -1,11 +1,11 @@
 'use strict';
 var assert = require('assert');
-var gutil = require('gulp-util');
+var Vinyl = require('vinyl');
 var i18n = require('.././');
 
 
 describe('gulp-i18n-localize: locale', function() {
-  var file = new gutil.File({
+  var file = new Vinyl({
     base: __dirname,
     path: __dirname + '/file.html',
     contents: new Buffer('${{ foo.bar }}$')
