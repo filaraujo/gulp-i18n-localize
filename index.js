@@ -1,7 +1,9 @@
 'use strict';
 var fs = require('fs');
-var gutil = require('gulp-util');
 var path = require('path');
+var log = require('fancy-log');
+var PluginError = require('plugin-error');
+var Vinyl = require('vinyl');
 var requireDir = require('require-dir');
 var through = require('through2');
 var istextorbinary = require('istextorbinary');
@@ -92,7 +94,7 @@ module.exports = function(options) {
   localizationMatchCount = 0;
 
   if (!options || !options.localeDir) {
-    throw new gutil.PluginError('gulp-i18n-localize', 'locale directory required');
+    throw new PluginError('gulp-i18n-localize', 'locale directory required');
   }
 
   var localeDir = path.resolve(process.cwd(), options.localeDir);
@@ -101,7 +103,7 @@ module.exports = function(options) {
     fs.accessSync(localeDir);
     options.dictionary = requireDir(localeDir, {recurse: true, noCache: true});
   } catch (e) {
-    gutil.log('gulp-i18n-localize: locale directory not found');
+    log.error('gulp-i18n-localize: locale directory not found');
     options.dictionary = false;
   }
 
@@ -122,7 +124,7 @@ module.exports = function(options) {
     }
 
     if (file.isStream()) {
-      cb(new gutil.PluginError('gulp-i18n-localize', 'Streaming not supported'));
+      cb(new PluginError('gulp-i18n-localize', 'Streaming not supported'));
       return;
     }
 
@@ -131,10 +133,10 @@ module.exports = function(options) {
       schema = getSchema(options.schema, file);
 
       errors.forEach(function(error) {
-        gutil.log.apply({}, ['gulp-i18n-localize:'].concat(error));
+        log.error.apply({}, ['gulp-i18n-localize:'].concat(error));
 
         if (!options.ignoreErrors) {
-          new gutil.PluginError('gulp-i18n-localize', error);
+          new PluginError('gulp-i18n-localize', error);
         }
       });
 
@@ -150,18 +152,18 @@ module.exports = function(options) {
             contents = new Buffer(output[locale]);
           }
 
-          this.push(new gutil.File({
+          this.push(new Vinyl({
             path: filePath,
             contents: contents
           }));
         }, this);
     } catch (err) {
-      this.emit('error', new gutil.PluginError('gulp-i18n-localize', err));
+      this.emit('error', new PluginError('gulp-i18n-localize', err));
     }
 
     cb();
   }, function(cb) {
-    gutil.log.apply({}, ['gulp-i18n-localize:', localizationMatchCount, 'translations found']);
+    log.error.apply({}, ['gulp-i18n-localize:', localizationMatchCount, 'translations found']);
     cb();
   });
 };
